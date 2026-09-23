@@ -1,26 +1,82 @@
-
 import {
   CameraView,
   type CameraType,
   useCameraPermissions,
+  type CameraCapturedPicture,
 } from 'expo-camera';
 
 import { View, Text, Pressable } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { router, useIsFocused } from 'expo-router';
 
 import { scanStyles as styles } from '../styles/scanStyles';
 import { buttonStyles } from '../styles/buttonStyles';
 
 export default function ScanBoardScreen() {
-  const [facing, setFacing] = useState<CameraType>('back');
+  const [facing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
 
-  // Wait for permission status
+  const isFocused = useIsFocused();
+
+  const cameraRef = useRef<CameraView>(null);
+
+  const [photo, setPhoto] =
+    useState<CameraCapturedPicture | null>(null);
+
+  const [isCameraReady, setIsCameraReady] =
+    useState(false);
+
+  const [isTakingPhoto, setIsTakingPhoto] =
+    useState(false);
+
+  useEffect(() => {
+    console.log('Screen focused:', isFocused);
+
+    if (!isFocused) {
+      setIsCameraReady(false);
+    }
+  }, [isFocused]);
+
+  const takePhoto = async () => {
+    if (
+      !cameraRef.current ||
+      !isCameraReady ||
+      isTakingPhoto
+    ) {
+      return;
+    }
+
+    try {
+      setIsTakingPhoto(true);
+
+      const data =
+        await cameraRef.current.takePictureAsync();
+
+      if (!data) {
+        return;
+      }
+
+      console.log('Photo taken:', data.uri);
+
+      setPhoto(data);
+
+      router.push({
+        pathname: '/image_scanned',
+        params: {
+          imageUri: data.uri,
+        },
+      });
+    } catch (error) {
+      console.error('Error taking picture:', error);
+    } finally {
+      setIsTakingPhoto(false);
+    }
+  };
+
   if (!permission) {
     return <View style={styles.container} />;
   }
 
-  // Request camera permission
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
@@ -33,7 +89,10 @@ export default function ScanBoardScreen() {
         </Text>
 
         <Pressable
-          style={[buttonStyles.base, buttonStyles.primary]}
+          style={[
+            buttonStyles.base,
+            buttonStyles.primary,
+          ]}
           onPress={requestPermission}
         >
           <Text style={buttonStyles.primaryText}>
@@ -51,10 +110,23 @@ export default function ScanBoardScreen() {
       </Text>
 
       <View style={styles.cameraContainer}>
-        <CameraView
-          style={styles.camera}
-          facing={facing}
-        />
+        {isFocused && (
+          <CameraView
+            ref={cameraRef}
+            style={styles.camera}
+            facing={facing}
+            onCameraReady={() => {
+              console.log('Camera is ready!');
+              setIsCameraReady(true);
+            }}
+            onMountError={(error) => {
+              console.error(
+                'Camera mount error:',
+                error.message
+              );
+            }}
+          />
+        )}
 
         <View
           style={styles.guideOverlay}
@@ -62,6 +134,25 @@ export default function ScanBoardScreen() {
         >
           <View style={styles.guideSquare} />
         </View>
+      </View>
+
+      <View style={styles.actions}>
+        <Pressable
+          style={[
+            buttonStyles.base,
+            buttonStyles.primary,
+          ]}
+          onPress={takePhoto}
+          disabled={!isCameraReady || isTakingPhoto}
+        >
+          <Text style={buttonStyles.primaryText}>
+            {isTakingPhoto
+              ? 'Taking Photo...'
+              : isCameraReady
+                ? 'Scan Sudoku'
+                : 'Loading Camera...'}
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
