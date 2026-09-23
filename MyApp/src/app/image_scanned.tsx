@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { imageStyles as styles } from '../styles/ImageStyles';
 import { buttonStyles as buttonStyles } from '../styles/buttonStyles';
-import {Image, StyleSheet} from 'react-native';
+import { Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 
@@ -11,6 +11,19 @@ export default function image_scanned() {
 
     const { imageUri } = useLocalSearchParams<{ imageUri: string }>();
 
+    const handleRetakePhoto = () => {
+        router.push('/scan_board');
+    }
+
+    // const handleConfirmPhoto = () => {
+    //     router.push({
+    //         pathname: '/image_confirmed',
+    //         params: {
+    //             imageUri: imageUri,
+    //         },
+    //     });
+    // };
+
     return (
         
         <View style={styles.container}>
@@ -19,12 +32,10 @@ export default function image_scanned() {
 
             <Pressable 
             style={[buttonStyles.base, buttonStyles.primary]} 
-            onPress={() => router.push('/scan_board')}
+            onPress={() => handleRetakePhoto()}
             >
             <Text style={buttonStyles.primaryText}>Retake Photo</Text>
             </Pressable>
         </View>
-
-        
     );
 }
