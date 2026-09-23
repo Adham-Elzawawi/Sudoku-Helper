@@ -56,6 +56,8 @@ export default function ImageScanned() {
         <Text>Cropping...</Text>
       )}
 
+      
+
       <Pressable
         style={[buttonStyles.base, buttonStyles.primary]}
         onPress={() => router.replace('/scan_board')}
