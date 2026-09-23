@@ -1,27 +1,31 @@
+
 import {
   CameraView,
   type CameraType,
   useCameraPermissions,
-  type CameraCapturedPicture,
 } from 'expo-camera';
 
-import { View, Text, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  Alert,
+} from 'react-native';
+
 import { useEffect, useRef, useState } from 'react';
 import { router, useIsFocused } from 'expo-router';
+import ImagePicker from 'react-native-image-crop-picker';
 
 import { scanStyles as styles } from '../styles/scanStyles';
 import { buttonStyles } from '../styles/buttonStyles';
 
 export default function ScanBoardScreen() {
   const [facing] = useState<CameraType>('back');
-  const [permission, requestPermission] = useCameraPermissions();
+  const [permission, requestPermission] =
+    useCameraPermissions();
 
   const isFocused = useIsFocused();
-
   const cameraRef = useRef<CameraView>(null);
-
-  const [photo, setPhoto] =
-    useState<CameraCapturedPicture | null>(null);
 
   const [isCameraReady, setIsCameraReady] =
     useState(false);
@@ -29,54 +33,54 @@ export default function ScanBoardScreen() {
   const [isTakingPhoto, setIsTakingPhoto] =
     useState(false);
 
-  useEffect(() => {
-    console.log('Screen focused:', isFocused);
+  const [cameraVisible, setCameraVisible] =
+    useState(true);
 
-    if (!isFocused) {
-      setIsCameraReady(false);
-    }
+  // Mount the camera only when this screen is active.
+  useEffect(() => {
+    setCameraVisible(isFocused);
+    setIsCameraReady(false);
   }, [isFocused]);
 
+  
   const takePhoto = async () => {
-    if (
-      !cameraRef.current ||
-      !isCameraReady ||
-      isTakingPhoto
-    ) {
+    if (!cameraRef.current || !isCameraReady || isTakingPhoto) {
       return;
     }
 
     try {
       setIsTakingPhoto(true);
 
-      const data =
-        await cameraRef.current.takePictureAsync();
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 1,
+      });
 
-      if (!data) {
-        return;
-      }
+      if (!photo) return;
 
-      console.log('Photo taken:', data.uri);
-
-      setPhoto(data);
+      console.log('Photo taken:', photo.uri);
 
       router.push({
         pathname: '/image_scanned',
         params: {
-          imageUri: data.uri,
+          imageUri: photo.uri,
+          imageWidth: String(photo.width),
+          imageHeight: String(photo.height),
         },
       });
+
     } catch (error) {
-      console.error('Error taking picture:', error);
+      console.error('Camera error:', error);
     } finally {
       setIsTakingPhoto(false);
     }
   };
 
+  // Wait for permission status.
   if (!permission) {
     return <View style={styles.container} />;
   }
 
+  // Request camera permission.
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
@@ -85,7 +89,7 @@ export default function ScanBoardScreen() {
         </Text>
 
         <Text style={styles.description}>
-          We need your permission to use the camera.
+          Sudoku Helper needs access to your camera.
         </Text>
 
         <Pressable
@@ -110,7 +114,7 @@ export default function ScanBoardScreen() {
       </Text>
 
       <View style={styles.cameraContainer}>
-        {isFocused && (
+        {isFocused && cameraVisible && (
           <CameraView
             ref={cameraRef}
             style={styles.camera}
@@ -124,16 +128,19 @@ export default function ScanBoardScreen() {
                 'Camera mount error:',
                 error.message
               );
+              setIsCameraReady(false);
             }}
           />
         )}
 
-        <View
-          style={styles.guideOverlay}
-          pointerEvents="none"
-        >
-          <View style={styles.guideSquare} />
-        </View>
+        {cameraVisible && (
+          <View
+            style={styles.guideOverlay}
+            pointerEvents="none"
+          >
+            <View style={styles.guideSquare} />
+          </View>
+        )}
       </View>
 
       <View style={styles.actions}>
@@ -143,11 +150,15 @@ export default function ScanBoardScreen() {
             buttonStyles.primary,
           ]}
           onPress={takePhoto}
-          disabled={!isCameraReady || isTakingPhoto}
+          disabled={
+            !isCameraReady ||
+            isTakingPhoto ||
+            !cameraVisible
+          }
         >
           <Text style={buttonStyles.primaryText}>
             {isTakingPhoto
-              ? 'Taking Photo...'
+              ? 'Processing...'
               : isCameraReady
                 ? 'Scan Sudoku'
                 : 'Loading Camera...'}

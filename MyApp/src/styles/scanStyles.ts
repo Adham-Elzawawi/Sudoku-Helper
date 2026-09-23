@@ -6,6 +6,7 @@ export const scanStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111827',
     padding: 16,
+
   },
 
   permissionContainer: {
@@ -70,5 +71,9 @@ export const scanStyles = StyleSheet.create({
     color: '#E5E7EB',
     textAlign: 'center',
     marginBottom: 16,
+  },
+
+  alignCenter: {
+    alignItems: 'center',
   },
 });
