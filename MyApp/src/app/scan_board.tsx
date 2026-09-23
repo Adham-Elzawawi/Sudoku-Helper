@@ -14,7 +14,6 @@ import {
 
 import { useEffect, useRef, useState } from 'react';
 import { router, useIsFocused } from 'expo-router';
-import ImagePicker from 'react-native-image-crop-picker';
 
 import { scanStyles as styles } from '../styles/scanStyles';
 import { buttonStyles } from '../styles/buttonStyles';
