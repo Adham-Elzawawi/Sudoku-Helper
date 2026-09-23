@@ -64,4 +64,11 @@ export const scanStyles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 24,
   },
+
+  message: {
+    fontSize: 16,
+    color: '#E5E7EB',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
 });

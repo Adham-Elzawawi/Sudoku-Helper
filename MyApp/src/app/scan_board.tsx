@@ -1,67 +1,35 @@
-import { useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  Pressable,
-  Alert,
-} from 'react-native';
+
 import {
   CameraView,
+  type CameraType,
   useCameraPermissions,
 } from 'expo-camera';
+
+import { View, Text, Pressable } from 'react-native';
+import { useState } from 'react';
 
 import { scanStyles as styles } from '../styles/scanStyles';
 import { buttonStyles } from '../styles/buttonStyles';
 
-export default function ScanSudokuScreen() {
-  const cameraRef = useRef<CameraView | null>(null);
+export default function ScanBoardScreen() {
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
 
-  const [permission, requestPermission] =
-    useCameraPermissions();
-
-  const [ready, setReady] = useState(false);
-  const [capturing, setCapturing] = useState(false);
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
-
-  async function takePicture() {
-    if (!cameraRef.current || !ready || capturing) {
-      return;
-    }
-
-    setCapturing(true);
-
-    try {
-      const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.9,
-      });
-
-      if (photo) {
-        setPhotoUri(photo.uri);
-      }
-    } catch {
-      Alert.alert('Error', 'Could not take the picture.');
-    } finally {
-      setCapturing(false);
-    }
-  }
-
-  // Wait for the camera permission status to load.
+  // Wait for permission status
   if (!permission) {
     return <View style={styles.container} />;
   }
 
-  // Ask for camera access if necessary.
+  // Request camera permission
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
         <Text style={styles.title}>
-          Camera access required
+          Camera Access Required
         </Text>
 
         <Text style={styles.description}>
-          Sudoku Helper needs your camera to
-          photograph your Sudoku board.
+          We need your permission to use the camera.
         </Text>
 
         <Pressable
@@ -69,7 +37,7 @@ export default function ScanSudokuScreen() {
           onPress={requestPermission}
         >
           <Text style={buttonStyles.primaryText}>
-            Allow Camera Access
+            Grant Permission
           </Text>
         </Pressable>
       </View>
@@ -83,61 +51,17 @@ export default function ScanSudokuScreen() {
       </Text>
 
       <View style={styles.cameraContainer}>
-        {photoUri ? (
-          <Image
-            source={{ uri: photoUri }}
-            style={styles.camera}
-            resizeMode="contain"
-          />
-        ) : (
-          <>
-            <CameraView
-              ref={cameraRef}
-              style={styles.camera}
-              facing="back"
-              onCameraReady={() => setReady(true)}
-            />
+        <CameraView
+          style={styles.camera}
+          facing={facing}
+        />
 
-            <View
-              style={styles.guideOverlay}
-              pointerEvents="none"
-            >
-              <View style={styles.guideSquare} />
-            </View>
-          </>
-        )}
-      </View>
-
-      <View style={styles.actions}>
-        {photoUri ? (
-          <>
-            <Text style={styles.description}>
-              Photo captured!
-            </Text>
-
-            <Pressable
-              style={[buttonStyles.base, buttonStyles.primary]}
-              onPress={() => {
-                setReady(false);
-                setPhotoUri(null);
-              }}
-            >
-              <Text style={buttonStyles.primaryText}>
-                Retake Photo
-              </Text>
-            </Pressable>
-          </>
-        ) : (
-          <Pressable
-            style={[buttonStyles.base, buttonStyles.primary]}
-            onPress={takePicture}
-            disabled={!ready || capturing}
-          >
-            <Text style={buttonStyles.primaryText}>
-              {capturing ? 'Capturing...' : 'Take Picture'}
-            </Text>
-          </Pressable>
-        )}
+        <View
+          style={styles.guideOverlay}
+          pointerEvents="none"
+        >
+          <View style={styles.guideSquare} />
+        </View>
       </View>
     </View>
   );
