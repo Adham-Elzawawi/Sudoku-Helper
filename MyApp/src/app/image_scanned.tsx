@@ -46,17 +46,33 @@ export default function ImageScanned() {
   const [croppedUri, setCroppedUri] = useState('');
 
 
-  useEffect(() => {
+  
+useEffect(() => {
     const cropImage = async () => {
       const width = Number(imageWidth);
       const height = Number(imageHeight);
-      const size = Math.min(width, height);
+
+      const cropScale = 0.95;
+      const offsetX = 0;
+      const offsetY = 0;
+
+      const size = Math.floor(Math.min(width, height) * cropScale);
+
+      const originX = Math.max(
+        0,
+        Math.min(width - size, Math.floor((width - size) / 2 + offsetX))
+      );
+
+      const originY = Math.max(
+        0,
+        Math.min(height - size, Math.floor((height - size) / 2 + offsetY))
+      );
 
       const context = ImageManipulator.manipulate(imageUri);
 
       context.crop({
-        originX: Math.floor((width - size) / 2),
-        originY: Math.floor((height - size) / 2),
+        originX,
+        originY,
         width: size,
         height: size,
       });
@@ -99,7 +115,7 @@ export default function ImageScanned() {
         disabled={!croppedUri}
       >
         <Text style={buttonStyles.primaryText}>
-          Test Backend
+          Scan
         </Text>
       </Pressable>
 

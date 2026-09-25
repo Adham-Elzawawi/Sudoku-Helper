@@ -133,12 +133,33 @@ export default function ScanBoardScreen() {
         )}
 
         {cameraVisible && (
-          <View
-            style={styles.guideOverlay}
-            pointerEvents="none"
-          >
-            <View style={styles.guideSquare} />
+          
+        <View style={styles.guideOverlay} pointerEvents="none">
+          <View style={styles.guideSquare}>
+            {Array.from({ length: 9 }, (_, row) => (
+              <View key={row} style={styles.gridRow}>
+                {Array.from({ length: 9 }, (_, col) => (
+                  <View
+                    key={col}
+                    style={[
+                      styles.gridCell,
+
+                      col < 8 &&
+                        (col === 2 || col === 5
+                          ? styles.thickRight
+                          : styles.thinRight),
+
+                      row < 8 &&
+                        (row === 2 || row === 5
+                          ? styles.thickBottom
+                          : styles.thinBottom),
+                    ]}
+                  />
+                ))}
+              </View>
+            ))}
           </View>
+        </View>
         )}
       </View>
 

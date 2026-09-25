@@ -53,12 +53,43 @@ export const scanStyles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  
   guideSquare: {
-    width: '85%',
+    width: '95%',
     aspectRatio: 1,
     borderWidth: 3,
     borderColor: '#4ADE80',
-    borderRadius: 6,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+
+  gridRow: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+
+  gridCell: {
+    flex: 1,
+  },
+
+  thinRight: {
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(74, 222, 128, 0.8)',
+  },
+
+  thickRight: {
+    borderRightWidth: 3,
+    borderRightColor: '#4ADE80',
+  },
+
+  thinBottom: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(74, 222, 128, 0.8)',
+  },
+
+  thickBottom: {
+    borderBottomWidth: 3,
+    borderBottomColor: '#4ADE80',
   },
 
   actions: {
