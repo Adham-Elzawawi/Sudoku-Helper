@@ -1,3 +1,4 @@
+
 import { View, Text, Pressable, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -7,6 +8,32 @@ import { fetch } from 'expo/fetch';
 
 import { imageStyles as styles } from '../styles/ImageStyles';
 import { buttonStyles } from '../styles/buttonStyles';
+
+
+async function ImageToBackend(imageURI: string) {
+  const file = new File(imageURI);
+  const bytes = await file.bytes();
+
+  const response = await fetch(
+    'http://192.168.129.85:8000/scan',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+      body: bytes,
+    }
+  );
+
+  console.log('Sending to Backend!')
+
+  if (!response.ok) {
+    throw new Error(`Image scan failed: ${response.status}`);
+  }
+
+  return response;
+}
+
 
 export default function ImageScanned() {
   const { imageUri, imageWidth, imageHeight } =
@@ -18,31 +45,6 @@ export default function ImageScanned() {
 
   const [croppedUri, setCroppedUri] = useState('');
 
-  
-const testBackend = async () => {
-  if (!croppedUri) return;
-
-  try {
-    const formData = new FormData();
-
-    const file = new File(croppedUri);
-    formData.append('image', file);
-
-    const response = await fetch(
-      'http://192.168.129.85:8000/scan',
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
-
-    console.log('HTTP status:', response.status);
-    console.log('Backend response:', await response.text());
-
-  } catch (error) {
-    console.error('Connection error:', error);
-  }
-};
 
   useEffect(() => {
     const cropImage = async () => {
@@ -63,12 +65,12 @@ const testBackend = async () => {
       const result = await image.saveAsync();
 
       setCroppedUri(result.uri);
+      console.log('Image Cropped!');
     };
-
-    console.log('Image Cropped!');
 
     cropImage().catch(console.error);
   }, [imageUri, imageWidth, imageHeight]);
+
 
   return (
     <View style={styles.container}>
@@ -86,14 +88,20 @@ const testBackend = async () => {
 
       <Pressable
         style={[buttonStyles.base, buttonStyles.primary]}
-        onPress={testBackend}
+        onPress={() => {
+          ImageToBackend(croppedUri)
+            .then(async (response) => {
+              console.log('HTTP status:', response.status);
+              console.log('Backend response:', await response.text());
+            })
+            .catch(console.error);
+        }}
         disabled={!croppedUri}
-        >
+      >
         <Text style={buttonStyles.primaryText}>
-            Test Backend
+          Test Backend
         </Text>
-    </Pressable>
-      
+      </Pressable>
 
       <Pressable
         style={[buttonStyles.base, buttonStyles.primary]}

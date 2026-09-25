@@ -3,6 +3,7 @@ import { errorCheckStyles as styles } from '../styles/checkErrorStyles';
 import { buttonStyles } from '@/styles/buttonStyles';
 import { router } from 'expo-router'; 
 
+
 export default function ErrorCheckScreen() {
   return (
     <View style={styles.container}>
@@ -19,6 +20,7 @@ export default function ErrorCheckScreen() {
       >
         <Text style={buttonStyles.primaryText}>
           Scan for Errors
+
         </Text>
         
       </Pressable>
