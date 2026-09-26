@@ -88,6 +88,8 @@ useEffect(() => {
   }, [imageUri, imageWidth, imageHeight]);
 
 
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Image Taken!</Text>
@@ -102,15 +104,28 @@ useEffect(() => {
         <Text>Cropping...</Text>
       )}
 
+
       <Pressable
         style={[buttonStyles.base, buttonStyles.primary]}
-        onPress={() => {
-          ImageToBackend(croppedUri)
-            .then(async (response) => {
-              console.log('HTTP status:', response.status);
-              console.log('Backend response:', await response.text());
-            })
-            .catch(console.error);
+        onPress={async () => {
+          try {
+            const response = await ImageToBackend(croppedUri);
+
+            console.log('HTTP status:', response.status);
+
+            const sudoku: number[][] = await response.json();
+
+            console.log('Backend response:', sudoku);
+
+            router.push({
+              pathname: '/show_grid',
+              params: {
+                grid: JSON.stringify(sudoku),
+              },
+            });
+          } catch (error) {
+            console.error('Scan failed:', error);
+          }
         }}
         disabled={!croppedUri}
       >
@@ -127,6 +142,7 @@ useEffect(() => {
           Retake Photo
         </Text>
       </Pressable>
+
     </View>
   );
 }
