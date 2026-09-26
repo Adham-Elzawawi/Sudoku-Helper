@@ -44,13 +44,18 @@ export const gridStyles = StyleSheet.create({
     borderRightWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#CBD5E1',
-    backgroundColor: '#FFFFFF',
-  },
-
-  cellText: {
     fontSize: 23,
     fontWeight: '600',
     color: '#1E293B',
+  },
+
+  cellCorrect: {
+
+    backgroundColor: '#FFFFFF',
+  },
+
+  cellIncorrect: {
+    backgroundColor: 'rgb(245, 123, 123)',
   },
 
   boxRight: {
