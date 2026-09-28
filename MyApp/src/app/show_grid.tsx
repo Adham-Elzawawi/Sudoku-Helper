@@ -111,21 +111,21 @@ export default function GridScreen() {
           }
           else {
             console.log('Not Solvable')
+            router.push({
+              pathname: '/show_conflict',
+              params: {grid : JSON.stringify(sudoku)}
+          })
           }
         }
         else {
-          Alert.alert("Conflict Found, please correct scan")
+          Alert.alert("Conflict Found, please correct the grid")
         }
-        
       }}
       >
         <Text style={buttonStyles.primaryText}>
           Check for Errors
         </Text>
-      </Pressable>
-
-      
-
+      </Pressable>  
     </Pressable>
   );
 }

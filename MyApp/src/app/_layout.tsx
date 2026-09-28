@@ -9,5 +9,6 @@ export default function RootLayout() {
     <Stack.Screen name="image_scanned" options={{ title: 'Image Scanned' }}/>
     <Stack.Screen name="show_grid" options={{title: 'Show Grid'}}/>
     <Stack.Screen name="good_sudoku" options={{title: 'Good Sudoku'}}/>
+    <Stack.Screen name="show_conflict" options={{title: 'Conflicts'}}/>
   </Stack>);
 }
