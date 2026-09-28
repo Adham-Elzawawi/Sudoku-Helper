@@ -4,15 +4,19 @@ import {
   TextInput,
   Pressable,
   Keyboard,
+  Alert,
 } from 'react-native';
 
 import { useEffect, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 
 import validateGrid from '../services/board_valid';
+import solve_sudoku from '../services/sudoku_solve'
+
 
 import { gridStyles as styles } from '../styles/gridStyles';
 import { buttonStyles } from '@/styles/buttonStyles';
+
 
 export default function GridScreen() {
   const { grid } = useLocalSearchParams<{ grid: string }>();
@@ -97,7 +101,24 @@ export default function GridScreen() {
         ))}
       </View>
 
-      <Pressable style={[buttonStyles.base, buttonStyles.primary]} >
+      <Pressable 
+      style={[buttonStyles.base, buttonStyles.primary]} 
+      onPress={() => {
+        if (contradictCells.size === 0) {
+          const solvable = solve_sudoku(sudoku, 0, 0);
+          if (solvable) {
+            router.replace('/good_sudoku')
+          }
+          else {
+            console.log('Not Solvable')
+          }
+        }
+        else {
+          Alert.alert("Conflict Found, please correct scan")
+        }
+        
+      }}
+      >
         <Text style={buttonStyles.primaryText}>
           Check for Errors
         </Text>

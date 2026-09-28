@@ -61,4 +61,4 @@ function printBoard(board: number[][]) {
 }
 
 
-export default {solve_sudoku}
+export default solve_sudoku;

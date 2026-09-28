@@ -1,4 +1,3 @@
-
 function validateGrid(grid: number[][]): Set<string> {
     const rows = Array.from(
         { length: 9 },
