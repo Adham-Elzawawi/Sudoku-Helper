@@ -7,7 +7,7 @@ import {
   Keyboard,
 } from 'react-native';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 
 import validateGrid from '../services/board_valid';
@@ -25,8 +25,9 @@ export default function GridScreen() {
   const [contradictCells, setContradictCells] =
     useState<Set<string>>(new Set());
 
-  const [validationEnabled, setValidationEnabled] =
-    useState(false);
+  useEffect(() => {
+    setContradictCells(validateGrid(sudoku));
+  }, [sudoku])
 
   const updateCell = (
     rowIndex: number,
@@ -40,20 +41,15 @@ export default function GridScreen() {
 
     setSudoku(updatedGrid);
 
-    // Once validation is enabled, update conflicts
-    // every time the user changes a cell.
-    if (validationEnabled) {
-      setContradictCells(validateGrid(updatedGrid));
-    }
+    // Check contradiction every time we change an input
+    setContradictCells(validateGrid(updatedGrid));
+    
   };
 
-  const checkGrid = () => {
-    setValidationEnabled(true);
-    setContradictCells(validateGrid(sudoku));
-    Keyboard.dismiss();
-  };
+
 
   return (
+    
     <Pressable
       style={styles.container}
       onPress={Keyboard.dismiss}
@@ -106,18 +102,6 @@ export default function GridScreen() {
           </View>
         ))}
       </View>
-
-      <Pressable
-        style={[
-          buttonStyles.base,
-          buttonStyles.primary,
-        ]}
-        onPress={checkGrid}
-      >
-        <Text style={buttonStyles.primaryText}>
-          Test Error!
-        </Text>
-      </Pressable>
     </Pressable>
   );
 }
