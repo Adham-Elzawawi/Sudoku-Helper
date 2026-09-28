@@ -1,4 +1,3 @@
-
 import {
   View,
   Text,
@@ -40,12 +39,7 @@ export default function GridScreen() {
       text === '' ? -1 : Number(text);
 
     setSudoku(updatedGrid);
-
-    // Check contradiction every time we change an input
-    setContradictCells(validateGrid(updatedGrid));
-    
   };
-
 
 
   return (
@@ -102,6 +96,15 @@ export default function GridScreen() {
           </View>
         ))}
       </View>
+
+      <Pressable style={[buttonStyles.base, buttonStyles.primary]} >
+        <Text style={buttonStyles.primaryText}>
+          Check for Errors
+        </Text>
+      </Pressable>
+
+      
+
     </Pressable>
   );
 }

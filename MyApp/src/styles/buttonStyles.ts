@@ -9,6 +9,7 @@ export const buttonStyles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     maxWidth: 280,
+    marginVertical: 8,
   },
   primary: {
     backgroundColor: '#2563EB',
