@@ -45,6 +45,9 @@ export default function ImageScanned() {
 
   const [croppedUri, setCroppedUri] = useState('');
 
+   const [loading, setLoading] = useState(false);
+  
+
 
   
 useEffect(() => {
@@ -105,41 +108,51 @@ useEffect(() => {
       )}
 
 
-      <Pressable
-        style={[buttonStyles.base, buttonStyles.primary]}
-        onPress={async () => {
-          try {
-            const response = await ImageToBackend(croppedUri);
+    <Pressable
+      style={[
+        buttonStyles.base,
+        buttonStyles.primary,
+        loading && { opacity: 0.5 },
+      ]}
+      onPress={async () => {
+        if (loading || !croppedUri) return;
 
-            console.log('HTTP status:', response.status);
+        setLoading(true);
 
-            const sudoku: number[][] = await response.json();
+        try {
+          const response = await ImageToBackend(croppedUri);
 
-            console.log('Backend response:', sudoku);
+          console.log('HTTP status:', response.status);
 
-            router.push({
-              pathname: '/show_grid',
-              params: {
-                grid: JSON.stringify(sudoku),
-              },
-            });
-          } catch (error) {
-            console.error('Scan failed:', error);
-          }
-        }}
-        disabled={!croppedUri}
-      >
-        <Text style={buttonStyles.primaryText}>
-          Scan
-        </Text>
-      </Pressable>
+          const sudoku: number[][] = await response.json();
+
+          console.log('Backend response:', sudoku);
+
+          router.push({
+            pathname: '/show_grid',
+            params: {
+              grid: JSON.stringify(sudoku),
+            },
+          });
+        } catch (error) {
+          console.error('Scan failed:', error);
+        } finally {
+          setLoading(false);
+        }
+      }}
+      disabled={!croppedUri || loading}
+    >
+      <Text style={buttonStyles.primaryText}>
+        {loading ? "Loading..." : 'Use Photo'}
+      </Text>
+    </Pressable>
 
       <Pressable
         style={[buttonStyles.base, buttonStyles.primary]}
         onPress={() => router.replace('/scan_board')}
       >
         <Text style={buttonStyles.primaryText}>
-          Retake Photo
+          {loading ? "Loading..." : "Retake Photo"}
         </Text>
       </Pressable>
 

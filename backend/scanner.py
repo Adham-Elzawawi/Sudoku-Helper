@@ -6,7 +6,7 @@ import numpy as np
 
 
 def scan_sudoku(image: Image.Image) -> list[list[int]]:
-    cv_image = cv2.cvtColor(np.array(image), cv2.IMREAD_GRAYSCALE)
+    cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
     thresh = cv2.threshold(cv_image, 100, 255, cv2.THRESH_BINARY)[1]
     thresh = cv2.resize(thresh, (0,0), fx=1.25, fy=1.25)
 
@@ -26,7 +26,7 @@ def divide_into_grid(image: np.ndarray) -> list[list[int]]:
 
         for cell in cells:
             
-            h, w, _ = cell.shape
+            h, w, = cell.shape
             cell = cell[h//10:-h//10, w//10:-w//10]
 
             number = image_to_string(
