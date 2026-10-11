@@ -41,8 +41,9 @@ export default function solvedSudoku() {
                 key={colIndex}
                 style={[
                   styles.cell,
+                  // Fix to show green cells to show newly added cells
                   solvedSudokuIndexes.some(
-                      ([r, c]) => r === rowIndex && c === colIndex && sudoku[rowIndex][colIndex] != -1)
+                      ([r, c]) => r === rowIndex && c === colIndex && value != -1)
                       ? styles.cellCorrect
                       : styles.normalCell,
                   (colIndex === 2 || colIndex === 5) && styles.boxRight,
