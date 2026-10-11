@@ -23,6 +23,7 @@ import { buttonStyles } from '@/styles/buttonStyles';
 export default function GridScreen() {
   // The route passes the puzzle as a serialized JSON string.
   const { grid } = useLocalSearchParams<{ grid: string }>();
+  console.log('Received grid:', grid);
 
   // Parse the puzzle once when the screen mounts. Empty cells are stored as -1.
   const [sudoku, setSudoku] = useState<number[][]>(() => JSON.parse(grid));
