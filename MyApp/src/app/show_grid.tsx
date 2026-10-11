@@ -16,6 +16,8 @@ import solve_sudoku from '../services/sudoku_solve';
 import { gridStyles as styles } from '../styles/gridStyles';
 import { buttonStyles } from '@/styles/buttonStyles';
 
+
+
 /**
  * Displays the scanned sudoku board so the user can correct and verify entries.
  * The grid is received through the route params and revalidated whenever a number changes.
@@ -85,6 +87,7 @@ export default function GridScreen() {
       <Pressable
         style={[buttonStyles.base, buttonStyles.primary]}
         onPress={() => {
+          // Validate the grid and collect any conflicting cells.
           // Prevent solving the puzzle until the conflict set is empty.
           if (contradictCells.size === 0) {
             const solvable = solve_sudoku(sudoku, 0, 0);
@@ -105,6 +108,34 @@ export default function GridScreen() {
       >
         <Text style={buttonStyles.primaryText}>Check for Errors</Text>
       </Pressable>
+
+      <Pressable
+        style={[buttonStyles.base, buttonStyles.secondary]}
+        onPress={() => {
+          // Partially solve the puzzle if there are no conflicts. Otherwise, send user to the conflict screen.
+          if (contradictCells.size === 0) {
+            const solvable = solve_sudoku(sudoku, 0, 0);
+            if (solvable) {
+              router.push({
+                // TODO : Pass only solved grid + the original grid
+                pathname:'/amount_to_solve',
+                params: {grid: JSON.stringify(sudoku)}
+              });
+            } else {
+              console.log('Not Solvable');
+              router.push({
+                pathname: '/show_conflict',
+                params: { grid: JSON.stringify(sudoku) },
+              });
+            }
+          } else {
+            Alert.alert('Conflict Found, please correct the grid');
+          }
+        }}
+      >
+        <Text style={buttonStyles.secondaryText}>Partially Solve Puzzle</Text>
+      </Pressable>
+
     </Pressable>
   );
 }
