@@ -11,5 +11,6 @@ export default function RootLayout() {
     <Stack.Screen name="good_sudoku" options={{title: 'Good Sudoku'}}/>
     <Stack.Screen name="show_conflict" options={{title: 'Conflicts'}}/>
     <Stack.Screen name="amount_to_solve" options={{title: 'Amount to Solve'}}/>
+    <Stack.Screen name="solved_sudoku" options={{title: 'Solved Sudoku'}}/>
   </Stack>);
 }
