@@ -90,7 +90,7 @@ export default function GridScreen() {
           // Validate the grid and collect any conflicting cells.
           // Prevent solving the puzzle until the conflict set is empty.
           if (contradictCells.size === 0) {
-            const solvable = solve_sudoku(sudoku, 0, 0);
+            const [solvable, solvedBoard] = solve_sudoku(sudoku, [], 0, 0);
 
             if (solvable) {
               router.replace('/good_sudoku');
@@ -114,12 +114,12 @@ export default function GridScreen() {
         onPress={() => {
           // Partially solve the puzzle if there are no conflicts. Otherwise, send user to the conflict screen.
           if (contradictCells.size === 0) {
-            const solvable = solve_sudoku(sudoku, 0, 0);
+            const [solvable, solvedBoard] = solve_sudoku(sudoku, [], 0, 0);
             if (solvable) {
               router.push({
                 // TODO : Pass only solved grid + the original grid
                 pathname:'/amount_to_solve',
-                params: {grid: JSON.stringify(sudoku)}
+                params: {grid: JSON.stringify(sudoku), solvedGrid: JSON.stringify(solvedBoard)},
               });
             } else {
               console.log('Not Solvable');

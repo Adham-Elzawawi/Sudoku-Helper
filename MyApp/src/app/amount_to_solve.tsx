@@ -65,7 +65,7 @@ function percentToWord(percent: number): string {
 
 export default function AmountToSolve() {
     // Get the grid parameter from the local search params to be passed to the next screen.
-    const { grid } = useLocalSearchParams<{ grid: string }>();
+    const { grid, solvedGrid } = useLocalSearchParams<{ grid: string; solvedGrid: string }>();
 
     // State to hold the amount of the Sudoku puzzle to solve.
     const [amount, setAmount] = useState(20);
@@ -100,6 +100,7 @@ export default function AmountToSolve() {
                         pathname: '/solved_sudoku',
                         params: {
                             grid: JSON.stringify(grid),
+                            solvedGrid: JSON.stringify(solvedGrid),
                             amount: amount.toString(),
                         },
                     });

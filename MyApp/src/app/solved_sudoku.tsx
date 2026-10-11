@@ -1,18 +1,32 @@
 import { View, Text, TextInput } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
+
 import { gridStyles as styles } from '../styles/gridStyles';
+import toNotAdd from '../services/randomNumber';
 
 /**
  * Displays a read-only Sudoku grid.
  * The user can view the result but cannot modify any cells.
  */
 export default function solvedSudoku() {
-  const { grid, amount } = useLocalSearchParams<{ grid: string; amount: string }>();
-  const parsed = JSON.parse(grid);
+  const { grid, amount, solvedGrid } = 
+        useLocalSearchParams<{ grid: string; amount: string; solvedGrid: string }>();
 
-  const sudoku: number[][] =
-    typeof parsed === 'string' ? JSON.parse(parsed) : parsed;
+  console.log('Received solvable grid:', solvedGrid);
+
+  const parsed_grid = JSON.parse(grid);
+  const parsed_solvedGrid = JSON.parse(solvedGrid);
+
+
+  const parsed_sudoku: number[][] = typeof parsed_grid === 'string' ? JSON.parse(parsed_grid) : parsed_grid;
+  
+  const solvedSudokuIndexes: number[][] = typeof parsed_solvedGrid === 'string' ? JSON.parse(parsed_solvedGrid) : parsed_solvedGrid;
+
+
+  // Remove some numbers from the solved Sudoku grid based on the specified amount to create a partially solved puzzle.
+  const sudoku = toNotAdd(parsed_sudoku, solvedSudokuIndexes, Number(amount));
+  
 
   return (
     <View style={styles.container}>

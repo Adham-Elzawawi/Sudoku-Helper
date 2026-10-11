@@ -55,37 +55,46 @@ function is_valid(
  *
  * The function recursively fills empty cells (-1) with valid numbers from 1 to 9.
  * If no value works, it backtracks and tries the next option.
+ * Returns a boolean indicating whether the board is solvable and the index of solved board.
  */
-function solve_sudoku(board: number[][], row: number, col: number): boolean {
+function solve_sudoku(
+  board: number[][],
+  solved: number[][],
+  row: number,
+  col: number
+): [boolean, number[][]] {
   const board_size = 9;
 
-  // Base case: finished the last column of the last row.
   if (row === board_size - 1 && col === board_size) {
-    return true;
+    return [true, solved];
   }
 
-  // Move to the next row when the current row is complete.
   if (col === board_size) {
     row++;
     col = 0;
   }
 
-  // Skip cells that already contain a fixed value.
   if (board[row][col] !== -1) {
-    return solve_sudoku(board, row, col + 1);
+    return solve_sudoku(board, solved, row, col + 1);
   }
 
   for (let number = 1; number <= board_size; number++) {
     if (is_valid(board, row, col, number)) {
       board[row][col] = number;
-      if (solve_sudoku(board, row, col + 1)) {
-        return true;
+      solved.push([row, col]);
+
+      const [success] = solve_sudoku(board, solved, row, col + 1);
+
+      if (success) {
+        return [true, solved];
       }
+      // Backtrack
       board[row][col] = -1;
+      solved.pop();
     }
   }
 
-  return false;
+  return [false, solved];
 }
 
 /**
