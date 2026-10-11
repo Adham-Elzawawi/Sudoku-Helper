@@ -5,12 +5,7 @@ import {
   useCameraPermissions,
 } from 'expo-camera';
 
-import {
-  View,
-  Text,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 
 import { useEffect, useRef, useState } from 'react';
 import { router, useIsFocused } from 'expo-router';
@@ -18,30 +13,34 @@ import { router, useIsFocused } from 'expo-router';
 import { scanStyles as styles } from '../styles/scanStyles';
 import { buttonStyles } from '../styles/buttonStyles';
 
+/**
+ * Camera screen used to capture a Sudoku puzzle photo for processing.
+ *
+ * It requests camera permission, shows a guided 9x9 overlay, and sends the captured
+ * image to the next screen for cropping and OCR/solving flow.
+ */
 export default function ScanBoardScreen() {
   const [facing] = useState<CameraType>('back');
-  const [permission, requestPermission] =
-    useCameraPermissions();
+  const [permission, requestPermission] = useCameraPermissions();
 
   const isFocused = useIsFocused();
   const cameraRef = useRef<CameraView>(null);
 
-  const [isCameraReady, setIsCameraReady] =
-    useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isTakingPhoto, setIsTakingPhoto] = useState(false);
+  const [cameraVisible, setCameraVisible] = useState(true);
 
-  const [isTakingPhoto, setIsTakingPhoto] =
-    useState(false);
-
-  const [cameraVisible, setCameraVisible] =
-    useState(true);
-
-  // Mount the camera only when this screen is active.
+  // Only mount the camera when this screen is active so it does not keep running
+  // in the background when the user navigates away.
   useEffect(() => {
     setCameraVisible(isFocused);
     setIsCameraReady(false);
   }, [isFocused]);
 
-  
+  /**
+   * Captures the current frame and navigates to the image-processing screen.
+   * The photo metadata is passed along so the image can be cropped before analysis.
+   */
   const takePhoto = async () => {
     if (!cameraRef.current || !isCameraReady || isTakingPhoto) {
       return;
@@ -66,7 +65,6 @@ export default function ScanBoardScreen() {
           imageHeight: String(photo.height),
         },
       });
-
     } catch (error) {
       console.error('Camera error:', error);
     } finally {
@@ -74,33 +72,24 @@ export default function ScanBoardScreen() {
     }
   };
 
-  // Wait for permission status.
+  // Wait for the permission state to resolve before rendering the camera view.
   if (!permission) {
     return <View style={styles.container} />;
   }
 
-  // Request camera permission.
+  // If camera access has not yet been granted, ask the user for permission.
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
-        <Text style={styles.title}>
-          Camera Access Required
-        </Text>
+        <Text style={styles.title}>Camera Access Required</Text>
 
-        <Text style={styles.description}>
-          Sudoku Helper needs access to your camera.
-        </Text>
+        <Text style={styles.description}>Sudoku Helper needs access to your camera.</Text>
 
         <Pressable
-          style={[
-            buttonStyles.base,
-            buttonStyles.primary,
-          ]}
+          style={[buttonStyles.base, buttonStyles.primary]}
           onPress={requestPermission}
         >
-          <Text style={buttonStyles.primaryText}>
-            Grant Permission
-          </Text>
+          <Text style={buttonStyles.primaryText}>Grant Permission</Text>
         </Pressable>
       </View>
     );
@@ -108,9 +97,7 @@ export default function ScanBoardScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.description}>
-        Align your Sudoku grid inside the square.
-      </Text>
+      <Text style={styles.description}>Align your Sudoku grid inside the square.</Text>
 
       <View style={styles.cameraContainer}>
         {isFocused && cameraVisible && (
@@ -123,58 +110,39 @@ export default function ScanBoardScreen() {
               setIsCameraReady(true);
             }}
             onMountError={(error) => {
-              console.error(
-                'Camera mount error:',
-                error.message
-              );
+              console.error('Camera mount error:', error.message);
               setIsCameraReady(false);
             }}
           />
         )}
 
         {cameraVisible && (
-          
-        <View style={styles.guideOverlay} pointerEvents="none">
-          <View style={styles.guideSquare}>
-            {Array.from({ length: 9 }, (_, row) => (
-              <View key={row} style={styles.gridRow}>
-                {Array.from({ length: 9 }, (_, col) => (
-                  <View
-                    key={col}
-                    style={[
-                      styles.gridCell,
-
-                      col < 8 &&
-                        (col === 2 || col === 5
-                          ? styles.thickRight
-                          : styles.thinRight),
-
-                      row < 8 &&
-                        (row === 2 || row === 5
-                          ? styles.thickBottom
-                          : styles.thinBottom),
-                    ]}
-                  />
-                ))}
-              </View>
-            ))}
+          <View style={styles.guideOverlay} pointerEvents="none">
+            <View style={styles.guideSquare}>
+              {Array.from({ length: 9 }, (_, row) => (
+                <View key={row} style={styles.gridRow}>
+                  {Array.from({ length: 9 }, (_, col) => (
+                    <View
+                      key={col}
+                      style={[
+                        styles.gridCell,
+                        col < 8 && (col === 2 || col === 5 ? styles.thickRight : styles.thinRight),
+                        row < 8 && (row === 2 || row === 5 ? styles.thickBottom : styles.thinBottom),
+                      ]}
+                    />
+                  ))}
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
         )}
       </View>
 
       <View style={styles.actions}>
         <Pressable
-          style={[
-            buttonStyles.base,
-            buttonStyles.primary,
-          ]}
+          style={[buttonStyles.base, buttonStyles.primary]}
           onPress={takePhoto}
-          disabled={
-            !isCameraReady ||
-            isTakingPhoto ||
-            !cameraVisible
-          }
+          disabled={!isCameraReady || isTakingPhoto || !cameraVisible}
         >
           <Text style={buttonStyles.primaryText}>
             {isTakingPhoto

@@ -11,17 +11,21 @@ import { router } from 'expo-router';
 import { successStyles as styles } from '@/styles/successStyles';
 import { buttonStyles } from '@/styles/buttonStyles';
 
+/**
+ * Success screen shown after the board passes validation and solving checks.
+ * It uses a small animation to celebrate the valid Sudoku result.
+ */
 export default function SuccessScreen() {
   const scale = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Animate the success badge in gently when the screen first appears.
     Animated.parallel([
       Animated.spring(scale, {
         toValue: 1,
         useNativeDriver: true,
       }),
-
       Animated.timing(opacity, {
         toValue: 1,
         duration: 400,
@@ -41,24 +45,17 @@ export default function SuccessScreen() {
           },
         ]}
       >
-        <Text style={styles.checkMark}>
-          ✓
-        </Text>
+        <Text style={styles.checkMark}>✓</Text>
       </Animated.View>
 
-      <Text style={styles.title}>
-        All Good! {'\n'}
-      </Text>
-      <Text style = {styles.subtitle}>
-        No Conflicts Found
-      </Text>
+      <Text style={styles.title}>All Good! {'\n'}</Text>
+      <Text style={styles.subtitle}>No Conflicts Found</Text>
 
       <Pressable
-      style = {[buttonStyles.base, buttonStyles.primary]}
-      onPress={() => router.push('/')}
+        style={[buttonStyles.base, buttonStyles.primary]}
+        onPress={() => router.push('/')}
       >
-        <Text style = {buttonStyles.primaryText}>Home Page</Text>
-
+        <Text style={buttonStyles.primaryText}>Home Page</Text>
       </Pressable>
     </View>
   );

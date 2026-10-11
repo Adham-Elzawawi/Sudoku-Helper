@@ -1,20 +1,18 @@
-
 import { View, Text, Pressable } from 'react-native';
 import { homeStyles as styles } from '../styles/homeStyles';
 import { buttonStyles } from '../styles/buttonStyles';
-import { router } from 'expo-router'; 
+import { router } from 'expo-router';
 
-
+/**
+ * Sends a request to the backend test endpoint to verify the skip scanning pipeline.
+ * Returns the raw HTTP response so the caller can parse the returned board data.
+ */
 async function ImageTest() {
+  const response = await fetch('http://192.168.129.85:8000/test_image', {
+    method: 'GET',
+  });
 
-  const response = await fetch(
-    'http://192.168.129.85:8000/test_image',
-    {
-      method: 'GET',
-    }
-  );
-
-  console.log('Sending to Backend!')
+  console.log('Sending to Backend!');
 
   if (!response.ok) {
     throw new Error(`Image scan failed: ${response.status}`);
@@ -23,6 +21,10 @@ async function ImageTest() {
   return response;
 }
 
+/**
+ * Landing screen for the Sudoku Helper app.
+ * Lets the user start a scan or trigger a backend image test for debugging.
+ */
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
@@ -32,9 +34,7 @@ export default function HomeScreen() {
         style={[buttonStyles.base, buttonStyles.primary]}
         onPress={() => router.push('/scan_board')}
       >
-        <Text style={buttonStyles.primaryText}>
-          Scan Board
-        </Text>
+        <Text style={buttonStyles.primaryText}>Scan Board</Text>
       </Pressable>
 
       <Pressable
@@ -43,6 +43,9 @@ export default function HomeScreen() {
           try {
             const response = await ImageTest();
             console.log('HTTP status:', response.status);
+
+            // The backend is expected to return the detected Sudoku board as JSON.
+            // That payload is passed into the grid editor for review.
             router.push({
               pathname: '/show_grid',
               params: {
@@ -54,19 +57,11 @@ export default function HomeScreen() {
           }
         }}
       >
-        <Text style={buttonStyles.secondaryText}>
-          Test Image
-        </Text>
+        <Text style={buttonStyles.secondaryText}>Test Image</Text>
       </Pressable>
 
-
-
-      <Pressable
-        style={[buttonStyles.base, buttonStyles.secondary]}
-      >
-        <Text style={buttonStyles.secondaryText}>
-          How to Use
-        </Text>
+      <Pressable style={[buttonStyles.base, buttonStyles.secondary]}>
+        <Text style={buttonStyles.secondaryText}>How to Use</Text>
       </Pressable>
     </View>
   );
