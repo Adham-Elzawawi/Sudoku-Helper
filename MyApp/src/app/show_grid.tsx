@@ -67,7 +67,7 @@ export default function GridScreen() {
                   key={colIndex}
                   style={[
                     styles.cell,
-                    isConflicting ? styles.cellIncorrect : styles.cellCorrect,
+                    isConflicting ? styles.cellIncorrect : styles.normalCell,
                     (colIndex === 2 || colIndex === 5) && styles.boxRight,
                     (rowIndex === 2 || rowIndex === 5) && styles.boxBottom,
                   ]}

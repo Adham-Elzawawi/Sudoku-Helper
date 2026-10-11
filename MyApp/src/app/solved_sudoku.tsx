@@ -32,7 +32,6 @@ export default function solvedSudoku() {
       <Text style={styles.title}>Sudoku Result</Text>
 
       <Text style={styles.subtitle}>Your solved Sudoku puzzle</Text>
-      <Text style={styles.subtitle}>Amount solved: {amount}%</Text>
 
       <View style={styles.grid}>
         {sudoku.map((row, rowIndex) => (
@@ -42,11 +41,15 @@ export default function solvedSudoku() {
                 key={colIndex}
                 style={[
                   styles.cell,
-                  styles.cellCorrect,
+                  solvedSudokuIndexes.some(
+                      ([r, c]) => r === rowIndex && c === colIndex && sudoku[rowIndex][colIndex] != -1)
+                      ? styles.cellCorrect
+                      : styles.normalCell,
                   (colIndex === 2 || colIndex === 5) && styles.boxRight,
                   (rowIndex === 2 || rowIndex === 5) && styles.boxBottom,
                 ]}
                 value={value === -1 ? '' : String(value)}
+              
                 editable={false}
                 showSoftInputOnFocus={false}
                 textAlign="center"

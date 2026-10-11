@@ -39,7 +39,7 @@ export default function ShowConflict() {
         if (original_cell > 0) {
           boardCopy[row_indx][col_indx] = -1;
 
-          const solvable = solve_sudoku(boardCopy, 0, 0);
+          const [solvable, _] = solve_sudoku(boardCopy, [], 0, 0);
 
           if (solvable) {
             foundIncorrect.add(`${row_indx},${col_indx}`);
@@ -66,7 +66,7 @@ export default function ShowConflict() {
                   key={colIndex}
                   style={[
                     styles.cell,
-                    isIncorrect ? styles.cellIncorrect : styles.cellCorrect,
+                    isIncorrect ? styles.cellIncorrect : styles.normalCell,
                     (colIndex === 2 || colIndex === 5) && styles.boxRight,
                     (rowIndex === 2 || rowIndex === 5) && styles.boxBottom,
                   ]}

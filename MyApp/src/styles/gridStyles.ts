@@ -49,9 +49,12 @@ export const gridStyles = StyleSheet.create({
     color: '#1E293B',
   },
 
-  cellCorrect: {
-
+  normalCell: {
     backgroundColor: '#FFFFFF',
+  },
+
+  cellCorrect: {
+    backgroundColor: '#0bd455',
   },
 
   cellIncorrect: {
