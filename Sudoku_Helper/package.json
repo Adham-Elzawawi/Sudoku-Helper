@@ -1,5 +1,5 @@
 {
-  "name": "myapp",
+  "name": "sudoku-helper",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {

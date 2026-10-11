@@ -48,13 +48,11 @@ function CustomMarker({
  */
 function percentToWord(percent: number): string {
     switch (percent) {
-        case 20:
-            return 'a little';
-        case 40:
+        case 25:
             return 'some';
-        case 60:
-            return 'a lot';
-        case 80:
+        case 50:
+            return 'half';
+        case 75:
             return 'most';
         default:
             return 'all';
@@ -68,18 +66,19 @@ export default function AmountToSolve() {
     const { grid, solvedGrid } = useLocalSearchParams<{ grid: string; solvedGrid: string }>();
 
     // State to hold the amount of the Sudoku puzzle to solve.
-    const [amount, setAmount] = useState(20);
+    const [amount, setAmount] = useState(25);
     // State to track if the slider is being pressed.
     const [isPressed, setIsPressed] = useState(false);
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Help Solve: {percentToWord(amount)}</Text>
+            <Text style={styles.title}>How much to solve? </Text>
+            <Text style={{fontSize:28, fontWeight: 'bold',}}> {percentToWord(amount)}</Text>
             <Slider
                 style={{ width: '100%', height: 80, }}
-                minimumValue={20}
+                minimumValue={25}
                 maximumValue={100}
-                step={20}
+                step={25}
                 value={amount}
                 onValueChange={setAmount}
                 minimumTrackTintColor="#007AFF"
