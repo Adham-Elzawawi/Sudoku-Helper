@@ -13,7 +13,6 @@ export default function solvedSudoku() {
   const { grid, amount, solvedGrid } = 
         useLocalSearchParams<{ grid: string; amount: string; solvedGrid: string }>();
 
-  console.log('Received solvable grid:', solvedGrid);
 
   const parsed_grid = JSON.parse(grid);
   const parsed_solvedGrid = JSON.parse(solvedGrid);
